@@ -1,6 +1,7 @@
 let players = [];
 
 const container = document.getElementById('container');
+const playerCounter = document.getElementById('player-counter');
 container.addEventListener('touchstart', handleTouchStart);
 container.addEventListener('touchend', handleTouchEnd);
 
@@ -14,6 +15,16 @@ function handleTouchStart(event) {
     }
     players.push(event.changedTouches[0].identifier);
     drawCircle(event.changedTouches[0].clientX, event.changedTouches[0].clientY);
+    updatePlayerCounter();
+}
+
+function handleTouchEnd(event) {
+    const touchId = event.changedTouches[0].identifier;
+    const playerIndex = players.indexOf(touchId);
+    if (playerIndex !== -1) {
+        players.splice(playerIndex, 1);
+    }
+    updatePlayerCounter();
 }
 
 function drawCircle(x, y) {
@@ -36,25 +47,20 @@ function getRandomColor() {
     return color;
 }
 
-function handleTouchEnd(event) {
-    const touchId = event.changedTouches[0].identifier;
-    const playerIndex = players.indexOf(touchId);
-    if (playerIndex !== -1) {
-        players.splice(playerIndex, 1);
-    }
+function updatePlayerCounter() {
+    playerCounter.innerText = `Игроков: ${players.length}`;
 }
 
 function determineRandomPlayer() {
     const randomPlayer = players[Math.floor(Math.random() * players.length)];
     players = [];
     displayRandomPlayer(randomPlayer);
+    updatePlayerCounter();
 }
 
 function displayRandomPlayer(randomPlayer) {
     container.innerHTML = `<h1>Случайный игрок: ${randomPlayer}</h1>`;
     setTimeout(() => {
-        container.innerHTML = '<h1>Коснитесь экрана и держите 5 секунд</h1>';
+        container.innerHTML = '';
     }, 5000);
 }
-
-
