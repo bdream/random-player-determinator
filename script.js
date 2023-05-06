@@ -45,7 +45,7 @@ canvas.addEventListener('touchmove', (e) => {
 canvas.addEventListener('touchend', (e) => {
     if (gameFinished) return;
     e.preventDefault();
-    for (const touch of e.touches) {
+    for (const touch of e.changedTouches) {
         delete players[touch.identifier];
     }
     playersCount.textContent = Object.keys(players).length;
