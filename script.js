@@ -42,10 +42,10 @@ function drawCircle(id, x, y) {
 }
 
 function handleTouchMove(event) {
-    event.preventDefault();
     const touch = event.changedTouches[0];
     const circle = getCircleByTouchId(touch.identifier);
     if (!circle) return;
+    event.preventDefault();
     circle.style.left = `${touch.clientX - 50}px`;
     circle.style.top = `${touch.clientY - 50}px`;
 }
