@@ -1,87 +1,103 @@
-let players = [];
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const playersCount = document.getElementById('playersCount');
+const timerElement = document.getElementById('timer');
 
-const container = document.getElementById('container');
-const playerCounter = document.getElementById('player-counter');
-container.addEventListener('touchstart', handleTouchStart);
-container.addEventListener('touchend', handleTouchEnd);
-container.addEventListener('touchmove', handleTouchMove);
+let players = {};
+let timer = 5;
+let countdown;
 
-function handleTouchStart(event) {
-    if (players.length === 0) {
-        setTimeout(() => {
-            if (players.length > 0) {
-                determineRandomPlayer();
-            }
-        }, 5000);
-    }
-    const touchId = event.changedTouches[0].identifier;
-    players.push(touchId);
-    drawCircle(touchId, event.changedTouches[0].clientX, event.changedTouches[0].clientY);
-    updatePlayerCounter();
-}
+canvas.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    for (const touch of e.touches) {
+        const id = touch.identifier;
+        const color = randomColor();
+        const x = touch.pageX - canvas.offsetLeft;
+        const y = touch.pageY - canvas.offsetTop;
 
-function handleTouchEnd(event) {
-    const touchId = event.changedTouches[0].identifier;
-    const playerIndex = players.indexOf(touchId);
-    if (playerIndex !== -1) {
-        players.splice(playerIndex, 1);
-    }
-    updatePlayerCounter();
-}
+        players[id] = { color, x, y };
+        playersCount.textContent = Object.keys(players).length;
 
-function drawCircle(id, x, y) {
-    const circle = document.createElement('div');
-    circle.style.width = '100px';
-    circle.style.height = '100px';
-    circle.style.backgroundColor = getRandomColor();
-    circle.style.left = `${x - 50}px`;
-    circle.style.top = `${y - 50}px`;
-    circle.classList.add('circle');
-    circle.dataset.touchId = id;
-    container.appendChild(circle);
-}
-
-function handleTouchMove(event) {
-    const touch = event.changedTouches[0];
-    const circle = getCircleByTouchId(touch.identifier);
-    if (!circle) return;
-    event.preventDefault();
-    circle.style.left = `${touch.clientX - 50}px`;
-    circle.style.top = `${touch.clientY - 50}px`;
-}
-
-function getCircleByTouchId(touchId) {
-    return [...document.getElementsByClassName('circle')].find(
-        el => el.dataset.touchId == touchId
-    );
-}
-
-function getRandomColor() {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-}
-
-function updatePlayerCounter() {
-    playerCounter.innerText = `Игроков: ${players.length}`;
-}
-
-function determineRandomPlayer() {
-    const randomPlayer = players[Math.floor(Math.random() * players.length)];
-    players = [];
-    removeLosingCircles(randomPlayer);
-    updatePlayerCounter();
-}
-
-function removeLosingCircles(winnerId) {
-    const circles = document.getElementsByClassName('circle');
-    Array.from(circles).forEach(circle => {
-        if (circle.dataset.touchId != winnerId) {
-            container.removeChild(circle);
+        if (!countdown) {
+            timer = 5;
+            startCountdown();
         }
-    });
+    }
+});
+
+canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    for (const touch of e.touches) {
+        const id = touch.identifier;
+        const x = touch.pageX - canvas.offsetLeft;
+        const y = touch.pageY - canvas.offsetTop;
+
+        if (players[id]) {
+            players[id].x = x;
+            players[id].y = y;
+        }
+    }
+});
+
+canvas.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    for (const touch of e.touches) {
+        delete players[touch.identifier];
+    }
+    playersCount.textContent = Object.keys(players).length;
+});
+
+function randomColor() {
+    return `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`;
 }
 
+function startCountdown() {
+    timerElement.textContent = timer;
+    countdown = setInterval(() => {
+        timer--;
+        timerElement.textContent = timer;
+
+        if (timer <= 0) {
+            clearInterval(countdown);
+            countdown = null;
+            selectWinner();
+        }
+    }, 1000);
+}
+
+function selectWinner() {
+    const playerIds = Object.keys(players);
+    if (playerIds.length > 1) {
+        const winnerId = playerIds[Math.floor(Math.random() * playerIds.length)];
+
+        for (const id of playerIds) {
+            if (id !== winnerId) {
+                delete players[id];
+            }
+        }
+        playersCount.textContent = "1 (winner)";
+    }
+
+    setTimeout(() => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        players = {};
+        playersCount.textContent = "0";
+        timerElement.textContent = "0";
+    }, 5000);
+}
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (const id in players) {
+        const player = players[id];
+        ctx.beginPath();
+        ctx.arc(player.x, player.y, 20, 0, Math.PI * 2);
+        ctx.fillStyle = player.color;
+        ctx.fill();
+    }
+
+    requestAnimationFrame(draw);
+}
+
+draw();
