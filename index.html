@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=0">
-  <title>Случайный игрок</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Touch Game</title>
 </head>
 <body>
-  <div class="player-counter" id="player-counter">Игроков: 0</div>
-  <div class="time-counter" id="time-counter">Время: 5</div>
-  <div class="container" id="container"></div>
-  <script src="script.js"></script>
+    <h1>Touch Game</h1>
+    <p>Players: <span id="playersCount">0</span></p>
+    <p>Time left: <span id="timer">0</span>s</p>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <script src="script.js"></script>
 </body>
 </html>
