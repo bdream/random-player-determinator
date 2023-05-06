@@ -7,13 +7,14 @@ let players = {};
 let timer = 5;
 let countdown;
 let gameFinished = false;
+let sessionColors = {}; // переменная для хранения цветов всех участников
 
 canvas.addEventListener('touchstart', (e) => {
     if (gameFinished) return;
     e.preventDefault();
     for (const touch of e.touches) {
         const id = touch.identifier;
-        const color = randomColor();
+        const color = getSessionColor(id); // переходите к цвету сессии для текущего участника
         const x = touch.pageX - canvas.offsetLeft;
         const y = touch.pageY - canvas.offsetTop;
 
@@ -50,6 +51,13 @@ canvas.addEventListener('touchend', (e) => {
     }
     playersCount.textContent = Object.keys(players).length;
 });
+
+function getSessionColor(id) {
+    if (!sessionColors[id]) {
+        sessionColors[id] = randomColor(); // создать новый случайный цвет, если его нет
+    }
+    return sessionColors[id]; // вернуть текущий цвет сессии для участника с этим идентификатором
+}
 
 function randomColor() {
     return `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`;
