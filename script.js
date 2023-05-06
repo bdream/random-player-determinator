@@ -13,6 +13,27 @@ function handleTouchStart(event) {
         }, 5000);
     }
     players.push(event.changedTouches[0].identifier);
+    drawCircle(event.changedTouches[0].clientX, event.changedTouches[0].clientY);
+}
+
+function drawCircle(x, y) {
+    const circle = document.createElement('div');
+    circle.style.width = '100px';
+    circle.style.height = '100px';
+    circle.style.backgroundColor = getRandomColor();
+    circle.style.left = `${x - 50}px`;
+    circle.style.top = `${y - 50}px`;
+    circle.classList.add('circle');
+    container.appendChild(circle);
+}
+
+function getRandomColor() {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
 }
 
 function handleTouchEnd(event) {
