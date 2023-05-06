@@ -1,5 +1,9 @@
-const circles = {};
+let players = [];
 
+const container = document.getElementById('container');
+const playerCounter = document.getElementById('player-counter');
+container.addEventListener('touchstart', handleTouchStart);
+container.addEventListener('touchend', handleTouchEnd);
 container.addEventListener('touchmove', handleTouchMove);
 
 function handleTouchStart(event) {
@@ -35,16 +39,34 @@ function drawCircle(id, x, y) {
     circle.classList.add('circle');
     circle.dataset.touchId = id;
     container.appendChild(circle);
-    circles[id] = circle;
 }
 
 function handleTouchMove(event) {
     event.preventDefault();
     const touch = event.changedTouches[0];
-    const circle = circles[touch.identifier];
+    const circle = getCircleByTouchId(touch.identifier);
     if (!circle) return;
     circle.style.left = `${touch.clientX - 50}px`;
     circle.style.top = `${touch.clientY - 50}px`;
+}
+
+function getCircleByTouchId(touchId) {
+    return [...document.getElementsByClassName('circle')].find(
+        el => el.dataset.touchId == touchId
+    );
+}
+
+function getRandomColor() {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
+function updatePlayerCounter() {
+    playerCounter.innerText = `Игроков: ${players.length}`;
 }
 
 function determineRandomPlayer() {
@@ -55,10 +77,10 @@ function determineRandomPlayer() {
 }
 
 function removeLosingCircles(winnerId) {
-    Object.keys(circles).forEach(id => {
-        if (id !== winnerId.toString()) {
-            container.removeChild(circles[id]);
-            delete circles[id];
+    const circles = document.getElementsByClassName('circle');
+    Array.from(circles).forEach(circle => {
+        if (circle.dataset.touchId != winnerId) {
+            container.removeChild(circle);
         }
     });
 }
