@@ -6,8 +6,10 @@ const timerElement = document.getElementById('timer');
 let players = {};
 let timer = 5;
 let countdown;
+let gameFinished = false;
 
 canvas.addEventListener('touchstart', (e) => {
+    if (gameFinished) return;
     e.preventDefault();
     for (const touch of e.touches) {
         const id = touch.identifier;
@@ -26,6 +28,7 @@ canvas.addEventListener('touchstart', (e) => {
 });
 
 canvas.addEventListener('touchmove', (e) => {
+    if (gameFinished) return;
     e.preventDefault();
     for (const touch of e.touches) {
         const id = touch.identifier;
@@ -40,8 +43,9 @@ canvas.addEventListener('touchmove', (e) => {
 });
 
 canvas.addEventListener('touchend', (e) => {
+    if (gameFinished) return;
     e.preventDefault();
-    for (const touch of e.touches) {
+    for (const touch of e.changedTouches) {
         delete players[touch.identifier];
     }
     playersCount.textContent = Object.keys(players).length;
@@ -71,18 +75,21 @@ function selectWinner() {
         const winnerId = playerIds[Math.floor(Math.random() * playerIds.length)];
 
         for (const id of playerIds) {
-            if (id !== winnerId) {
+            if (if (id !== winnerId) {
                 delete players[id];
             }
         }
         playersCount.textContent = "1 (winner)";
     }
+    
+    gameFinished = true;
 
     setTimeout(() => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         players = {};
         playersCount.textContent = "0";
         timerElement.textContent = "0";
+        gameFinished = false;
     }, 5000);
 }
 
@@ -92,7 +99,7 @@ function draw() {
     for (const id in players) {
         const player = players[id];
         ctx.beginPath();
-        ctx.arc(player.x, player.y, 20, 0, Math.PI * 2);
+        ctx.arc(player.x, player.y, 50, 0, Math.PI * 2); // увеличено исходное значение с 20 на 50 (2.5 раза)
         ctx.fillStyle = player.color;
         ctx.fill();
     }
