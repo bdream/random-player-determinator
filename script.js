@@ -14,16 +14,19 @@ canvas.addEventListener('touchstart', (e) => {
     e.preventDefault();
     for (const touch of e.touches) {
         const id = touch.identifier;
-        const color = getSessionColor(id); // переходите к цвету сессии для текущего участника
-        const x = touch.pageX - canvas.offsetLeft;
-        const y = touch.pageY - canvas.offsetTop;
 
-        players[id] = { color, x, y };
-        playersCount.textContent = Object.keys(players).length;
+        if (!players[id]) { // добавьте проверку наличия игрока в списке
+            const color = getSessionColor(id); // получить цвет сессии для текущего участника
+            const x = touch.pageX - canvas.offsetLeft;
+            const y = touch.pageY - canvas.offsetTop;
 
-        if (!countdown) {
-            timer = 5;
-            startCountdown();
+            players[id] = { color, x, y };
+            playersCount.textContent = Object.keys(players).length;
+
+            if (!countdown) {
+                timer = 5;
+                startCountdown();
+            }
         }
     }
 });
