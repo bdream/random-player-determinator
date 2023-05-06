@@ -45,7 +45,7 @@ canvas.addEventListener('touchmove', (e) => {
 canvas.addEventListener('touchend', (e) => {
     if (gameFinished) return;
     e.preventDefault();
-    for (const touch of e.changedTouches) {
+    for (const touch of e.touches) {
         delete players[touch.identifier];
     }
     playersCount.textContent = Object.keys(players).length;
@@ -75,7 +75,7 @@ function selectWinner() {
         const winnerId = playerIds[Math.floor(Math.random() * playerIds.length)];
 
         for (const id of playerIds) {
-            if (if (id !== winnerId) {
+            if (id !== winnerId) {
                 delete players[id];
             }
         }
@@ -108,3 +108,4 @@ function draw() {
 }
 
 draw();
+
